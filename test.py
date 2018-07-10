@@ -44,8 +44,7 @@ def test(rank, args, shared_model):
             cx = Variable(cx.data, volatile=True)
             hx = Variable(hx.data, volatile=True)
 
-        value, logit, (hx, cx) = model(
-            (Variable(state.unsqueeze(0), volatile=True), (hx, cx)))
+        value, logit, (hx, cx) = model((Variable(state.unsqueeze(0), volatile=True), (hx, cx)))
         prob = F.softmax(logit)
         action = prob.max(1)[1].data.numpy()
 
