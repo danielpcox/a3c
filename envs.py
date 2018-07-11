@@ -35,9 +35,9 @@ class AtariRescale42x42(ObservationWrapper):
 
     def __init__(self, env=None):
         super(AtariRescale42x42, self).__init__(env)
-        self.observation_space = Box(0.0, 1.0, [1, 42, 42])
+        self.observation_space = Box(0.0, 1.0, [1, 42, 42], dtype=np.float32)
 
-    def _observation(self, observation_n):
+    def observation(self, observation_n):
         return [_process_frame42(observation) for observation in observation_n]
 
 
@@ -50,7 +50,7 @@ class NormalizedEnv(ObservationWrapper):
         self.alpha = 0.9999
         self.num_steps = 0
 
-    def _observation(self, observation_n):
+    def observation(self, observation_n):
         for observation in observation_n:
             self.num_steps += 1
             self.state_mean = self.state_mean * self.alpha + \
@@ -62,6 +62,7 @@ class NormalizedEnv(ObservationWrapper):
         unbiased_std = self.state_std / (1 - pow(self.alpha, self.num_steps))
 
         return [(observation - unbiased_mean) / (unbiased_std + 1e-8) for observation in observation_n]
+
 
 class Vectorize(gym.Wrapper):
     """
@@ -77,16 +78,16 @@ rather than a list of observations), turn it into a vectorized environment with 
         assert self.metadata.get('runtime.vectorized')
         self.n = 1
 
-    def _reset(self):
+    def reset(self):
         observation = self.env.reset()
         return [observation]
 
-    def _step(self, action):
+    def step(self, action):
         observation, reward, done, info = self.env.step(action[0])
         return [observation], [reward], [done], {'n': [info]}
 
-    def _seed(self, seed):
-        return [self.env.seed(seed[0])]
+    def seed(self, seed):
+        return [self.env.seed(seed)]
 
 class Env(gym.Env):
     """Base class capable of handling vectorized environments.
@@ -135,17 +136,17 @@ Take a vectorized environment with a batch of size 1 and turn it into an unvecto
     autovectorize = False
     metadata = {'runtime.vectorized': False}
 
-    def _reset(self):
+    def reset(self):
         observation_n = self.env.reset()
         assert(len(observation_n) == 1)
         return observation_n[0]
 
-    def _step(self, action):
+    def step(self, action):
         action_n = [action]
         observation_n, reward_n, done_n, info = self.env.step(action_n)
         return observation_n[0], reward_n[0], done_n[0], info['n'][0]
 
-    def _seed(self, seed):
-        return self.env.seed([seed])[0]
-
-
+    def seed(self, seed):
+        return self.env.seed(seed)
+    #def _seed(self, seed):
+        #return self.env.seed([seed])[0]
