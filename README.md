@@ -12,3 +12,5 @@ For now, plays a near-perfect game of Pong after about 30 minutes of training on
 ```
 python main.py --env-name "PongDeterministic-v4" --num-processes 16
 ```
+
+To save a graph of the results with matplotlib, add `--use_matplotlib` and to show an instance of the game, add `--show_game`

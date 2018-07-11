@@ -14,6 +14,18 @@ from collections import deque
 
 
 def test(rank, args, shared_model):
+
+    if args.use_matplotlib:
+        #import matplotlib and set backend
+        import matplotlib
+        matplotlib.use('macosx')
+        import matplotlib.pyplot as plt
+
+        #list of times and rewards for matplotlib
+        rewards = []
+        times = []
+        to_save = 0
+
     torch.manual_seed(args.seed + rank)
 
     env = create_atari_env(args.env_name)
@@ -34,6 +46,8 @@ def test(rank, args, shared_model):
     actions = deque(maxlen=100)
     episode_length = 0
     while True:
+        if args.show_game:
+            env.render()
         episode_length += 1
         # Sync with the shared model
         if done:
@@ -61,6 +75,17 @@ def test(rank, args, shared_model):
                 time.strftime("%Hh %Mm %Ss",
                               time.gmtime(time.time() - start_time)),
                 reward_sum, episode_length))
+
+            #plot times and rewards
+            if args.use_matplotlib:
+                times.append(time.gmtime(time.time() - start_time))
+                rewards.append(reward_sum)
+                if (to_save % 5 == 0):
+                    print("saving graph...")
+                    plt.plot(times, rewards)
+                    plt.savefig("images/a3c.png")
+                to_save+=1
+
             reward_sum = 0
             episode_length = 0
             actions.clear()
