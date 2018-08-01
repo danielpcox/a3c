@@ -37,11 +37,15 @@ parser.add_argument('--env-name', default='PongDeterministic-v3', metavar='ENV',
                     help='environment to train on (default: PongDeterministic-v3)')
 parser.add_argument('--no-shared', default=False, metavar='O',
                     help='use an optimizer without shared momentum.')
+parser.add_argument('--use-matplotlib', action='store_true',
+                    help='save a graph of times and rewards with matplotlib.')
+parser.add_argument('--show-game', action='store_true',
+                    help='display one instance of the game as the model trains.')
 
 
 if __name__ == '__main__':
-    os.environ['OMP_NUM_THREADS'] = '1'  
-  
+    os.environ['OMP_NUM_THREADS'] = '1'
+
     args = parser.parse_args()
 
     torch.manual_seed(args.seed)
