@@ -23,7 +23,7 @@ def test(rank, args, shared_model):
 
         #list of times and rewards for matplotlib
         rewards = []
-        times = []
+        #times = []
         to_save = 0
 
     torch.manual_seed(args.seed + rank)
@@ -78,11 +78,11 @@ def test(rank, args, shared_model):
 
             #plot times and rewards
             if args.use_matplotlib:
-                times.append(time.gmtime(time.time() - start_time))
+                #times.append(time.gmtime(time.time() - start_time))
                 rewards.append(reward_sum)
                 if (to_save % 5 == 0):
                     print("saving graph...")
-                    plt.plot(times, rewards)
+                    plt.plot(rewards)
                     plt.savefig("images/a3c.png")
                 to_save+=1
 
